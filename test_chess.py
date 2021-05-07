@@ -119,6 +119,8 @@ class Test(unittest.TestCase):
         assert result == -9
         result = ch.get_direction('b2', 'a3')
         assert result == 7
+        result = ch.get_direction('d4', 'a4')
+        assert result == -1
 
     def test_pawn_move_can_reach(self):
         result = ch.pawn_move_can_reach(STARTING_POS, 11, 19)
@@ -159,6 +161,54 @@ class Test(unittest.TestCase):
         assert result is True
         result = ch.bishop_move_can_reach(POS3, 47, 56)
         assert result is False
+
+    def test_queen_move_can_reach(self):
+        result = ch.queen_move_can_reach(POS3, 'f3', 'c6')
+        assert result is True
+        result = ch.queen_move_can_reach(POS3, 'd8', 'h4')
+        assert result is False
+
+    def test_king_move_can_reach(self):
+        result = ch.king_move_can_reach(POS3, 'g8', 'h8')
+        assert result is True
+
+    def test_can_reach(self):
+        result = ch.can_reach(POS3, 'g8', 'h8')
+        assert result is True
+        result = ch.can_reach(POS3, 'd8', 'h4')
+        assert result is False
+        result = ch.can_reach(POS3, 'f3', 'c6')
+        assert result is True
+        result = ch.can_reach(POS3, 'f3', 'c6', 'R')
+        assert result is False
+
+    def test_execute_move(self):
+        position = POS3.copy()
+        assert position[21] == 5
+        assert position[42] == -3
+        new_position = ch.execute_move(position, 'f3', 'c6')
+        assert new_position[21] == 0
+        assert new_position[42] == 5
+        position = STARTING_POS.copy()
+        new_position = ch.execute_move(position, 'd2', 'd4')
+        assert new_position[11] == 0
+        assert new_position[27] == 1
+        assert ch.en_passant_square == 19
+
+    def test_move(self):
+        move = ch.Move()
+        assert move.position == ch.STARTING_POS
+        assert move.color == 'white'
+        assert move.dest is None
+        move = ch.Move(STARTING_POS, 'e4', 'white')
+        assert ch.Move == type(move)
+        assert move.dest == 28
+        assert move.piece == 'P'
+        assert move.piece_val == 1
+        move = ch.Move(STARTING_POS, 'c5', 'black')
+        assert move.dest == 34
+        assert move.piece == 'P'
+        assert move.piece_val == -1
 
 
 if __name__ == "__main__":
